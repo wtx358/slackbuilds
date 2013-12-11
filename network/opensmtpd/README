@@ -3,12 +3,12 @@ as defined by RFC 5321, with some additional standard extensions.
 It allows ordinary machines to exchange e-mails with other systems 
 speaking the SMTP protocol.
 
-You must have smtpd, smtpf, smtpl, and smtpq users on the system 
+You must have smtpd and smtpq users groups on the system 
 for privilege separation - something like this should suffice: 
-useradd -u 270 -g 0 -r -s /bin/false -d /var/empty smtpd 
-useradd -u 271 -g 0 -r -s /bin/false -d /var/empty smtpf 
-useradd -u 272 -g 0 -r -s /bin/false -d /var/empty smtpl 
-useradd -u 273 -g 0 -r -s /bin/false -d /var/empty smtpq 
+groupadd -g 270 smtpd
+groupadd -g 271 smtpq
+useradd -u 270 -g 270 -r -s /bin/false -d /var/empty smtpd
+useradd -u 271 -g 271 -r -s /bin/false -d /var/empty smtpq
 
 You will want to add /etc/rc.d/rc.opensmtpd to rc.local so that it 
 will start on boot (or perhaps consider symlinking rc.sendmail to

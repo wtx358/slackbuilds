@@ -55,20 +55,20 @@ else
 fi
 
 bailout() {
-  printf "\nYou must have smtpd, smtpf, smtpl, and smtpq users on the system \n"
+  printf "\nYou must have smtpd and smtpq users and groups on the system \n"
   printf "for privilege separation - something like this should suffice: \n"
-  printf "\tuseradd -u 270 -g 0 -r -s /bin/false -d /var/empty smtpd \n"
-  printf "\tuseradd -u 271 -g 0 -r -s /bin/false -d /var/empty smtpf \n"
-  printf "\tuseradd -u 272 -g 0 -r -s /bin/false -d /var/empty smtpl \n"
-  printf "\tuseradd -u 273 -g 0 -r -s /bin/false -d /var/empty smtpq \n\n"
+  printf "\tgroupadd -g 270 smtpd \n"
+  printf "\tuseradd -u 270 -g 270 -r -s /bin/false -d /var/empty smtpd \n"
+  printf "\tgroupadd -g 271 smtpq \n"
+  printf "\tuseradd -u 271 -g 270 -r -s /bin/false -d /var/empty smtpq \n\n"
   exit 1
 }
 
-if ! getent passwd smtpd 1>/dev/null 2>/dev/null ; then
+if ! getent group smtpd 1>/dev/null 2>/dev/null ; then
   bailout
-elif ! getent passwd smtpf 1>/dev/null 2>/dev/null ; then
+elif ! getent passwd smtpd 1>/dev/null 2>/dev/null ; then
   bailout
-elif ! getent passwd smtpl 1>/dev/null 2>/dev/null ; then
+elif ! getent group smtpq 1>/dev/null 2>/dev/null ; then
   bailout
 elif ! getent passwd smtpq 1>/dev/null 2>/dev/null ; then
   bailout
@@ -104,13 +104,10 @@ CXXFLAGS="$SLKCFLAGS" \
   --docdir=/usr/doc/$PRGNAM-$VERSION \
   --with-maildir=/var/spool/mail \
   --with-privsep-user=smtpd \
-  --with-filter-user=smtpf \
+  --with-filter-user=smtpd \
+  --with-lookup-user=smtpd \
   --with-queue-user=smtpq \
-  --with-lookup-user=smtpl \
   --build=$ARCH-slackware-linux
-
-# the "smtpl" user won't actually be used until 5.4, but it's harmless
-# to go ahead and have it present - I'm less likely to forget later :)
 
 make
 make install DESTDIR=$PKG
